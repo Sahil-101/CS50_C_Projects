@@ -732,8 +732,3 @@ void edges(int height, int width, RGBTRIPLE image[height][width])
     }
     return;
 }
-
-
-
-
-//bottom right corner Green
