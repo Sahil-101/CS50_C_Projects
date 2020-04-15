@@ -3,6 +3,7 @@
 #include<math.h>
 #include<stdio.h>
 
+
 int startRow, endRow, startColumn, endColumn;
 
 
@@ -249,12 +250,490 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
             
     }
 }
+
+
+
 // Detect edges
 void edges(int height, int width, RGBTRIPLE image[height][width])
 {
+
+    RGBTRIPLE image2[height][width];
+
+    //copying image as image2
+    for(int i=0; i<height; i++)
+    {
+        for(int j=0;j<width; j++)
+        {
+            image2[i][j]=image[i][j];
+        }
+    }
+    //gmatrices initialsing and temp variabels
+    int gxm[3][3]={{-1,-0,1},{-2,0,2},{-1,0,1}};
+    int gym[3][3]={{-1,-2,-1},{0,0,0},{1,2,1}};
+    int gx1,gx2,gx3,gy1,gy2,gy3,g1,g2,g3;
+
+    //calculating gx for middle ones
+    for(int i=1; i<height-1; i++)
+    {
+        for(int j=1; j<width-1; j++)
+        {
+
+            gx1=gxm[0][0]*image2[i-1][j-1].rgbtBlue+gxm[0][1]*image2[i-1][j].rgbtBlue+gxm[0][2]*image2[i-1][j+1].rgbtBlue+gxm[1][0]*image2[i][j-1].rgbtBlue
+                +gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][2]*image2[i][j+1].rgbtBlue+gxm[2][0]*image2[i+1][j-1].rgbtBlue+gxm[2][1]*image2[i+1][j].rgbtBlue
+                +gxm[2][2]*image2[i+1][j+1].rgbtBlue;
+
+            gx2=gxm[0][0]*image2[i-1][j-1].rgbtGreen+gxm[0][1]*image2[i-1][j].rgbtGreen+gxm[0][2]*image2[i-1][j+1].rgbtGreen+gxm[1][0]*image2[i][j-1].rgbtGreen
+                +gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][2]*image2[i][j+1].rgbtGreen+gxm[2][0]*image2[i+1][j-1].rgbtGreen+gxm[2][1]*image2[i+1][j].rgbtGreen
+                +gxm[2][2]*image2[i+1][j+1].rgbtGreen;
+
+            gx3=gxm[0][0]*image2[i-1][j-1].rgbtRed+gxm[0][1]*image2[i-1][j].rgbtRed+gxm[0][2]*image2[i-1][j+1].rgbtRed+gxm[1][0]*image2[i][j-1].rgbtRed
+                +gxm[1][1]*image2[i][j].rgbtRed+gxm[1][2]*image2[i][j+1].rgbtRed+gxm[2][0]*image2[i+1][j-1].rgbtRed+gxm[2][1]*image2[i+1][j].rgbtRed
+                +gxm[2][2]*image2[i+1][j+1].rgbtRed;
+    
+
+            gy1=gym[0][0]*image2[i-1][j-1].rgbtBlue+gym[0][1]*image2[i-1][j].rgbtBlue+gym[0][2]*image2[i-1][j+1].rgbtBlue+gym[1][0]*image2[i][j-1].rgbtBlue
+                +gym[1][1]*image2[i][j].rgbtBlue+gym[1][2]*image2[i][j+1].rgbtBlue+gym[2][0]*image2[i+1][j-1].rgbtBlue+gym[2][1]*image2[i+1][j].rgbtBlue
+                +gym[2][2]*image2[i+1][j+1].rgbtBlue;
+
+            gy2=gym[0][0]*image2[i-1][j-1].rgbtGreen+gym[0][1]*image2[i-1][j].rgbtGreen+gym[0][2]*image2[i-1][j+1].rgbtGreen+gym[1][0]*image2[i][j-1].rgbtGreen
+                +gym[1][1]*image2[i][j].rgbtGreen+gym[1][2]*image2[i][j+1].rgbtGreen+gym[2][0]*image2[i+1][j-1].rgbtGreen+gym[2][1]*image2[i+1][j].rgbtGreen
+                +gym[2][2]*image2[i+1][j+1].rgbtGreen;
+
+            gy3=gym[0][0]*image2[i-1][j-1].rgbtRed+gym[0][1]*image2[i-1][j].rgbtRed+gym[0][2]*image2[i-1][j+1].rgbtRed+gym[1][0]*image2[i][j-1].rgbtRed
+                +gym[1][1]*image2[i][j].rgbtRed+gym[1][2]*image2[i][j+1].rgbtRed+gym[2][0]*image2[i+1][j-1].rgbtRed+gym[2][1]*image2[i+1][j].rgbtRed
+                +gym[2][2]*image2[i+1][j+1].rgbtRed;
+              
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+        }
+    }
+
+    //for top and bottom height
+    for(int i=0; i<height; i+=height-1)
+    {
+        for(int j=0; j<width; j++)
+        { 
+            //top left corner
+            if((i==0)&&(j==0))
+            {
+                gx1=gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][2]*image2[i][j+1].rgbtBlue+gxm[2][1]*image2[i+1][j].rgbtBlue
+                    +gxm[2][2]*image2[i+1][j+1].rgbtBlue;
+
+                gx2=gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][2]*image2[i][j+1].rgbtGreen+gxm[2][1]*image2[i+1][j].rgbtGreen
+                    +gxm[2][2]*image2[i+1][j+1].rgbtGreen;
+
+                gx3=gxm[1][1]*image2[i][j].rgbtRed+gxm[1][2]*image2[i][j+1].rgbtRed+gxm[2][1]*image2[i+1][j].rgbtRed
+                    +gxm[2][2]*image2[i+1][j+1].rgbtRed;
+    
+
+
+                gy1=gym[1][1]*image2[i][j].rgbtBlue+gym[1][2]*image2[i][j+1].rgbtBlue+gym[2][1]*image2[i+1][j].rgbtBlue
+                    +gym[2][2]*image2[i+1][j+1].rgbtBlue;
+
+                gy2=gym[1][1]*image2[i][j].rgbtGreen+gym[1][2]*image2[i][j+1].rgbtGreen+gym[2][1]*image2[i+1][j].rgbtGreen
+                    +gym[2][2]*image2[i+1][j+1].rgbtGreen;
+
+                gy3=gym[1][1]*image2[i][j].rgbtRed+gym[1][2]*image2[i][j+1].rgbtRed+gym[2][1]*image2[i+1][j].rgbtRed
+                    +gym[2][2]*image2[i+1][j+1].rgbtRed;
+               
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+            }
+            //top right corner
+            else if((i==0)&&(j==width-1))
+            {
+                gx1=gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][0]*image2[i][j-1].rgbtBlue+gxm[2][1]*image2[i+1][j].rgbtBlue
+                    +gxm[2][0]*image2[i+1][j-1].rgbtBlue;
+
+                gx2=gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][0]*image2[i][j-1].rgbtGreen+gxm[2][1]*image2[i+1][j].rgbtGreen
+                    +gxm[2][0]*image2[i+1][j-1].rgbtGreen;
+
+                gx3=gxm[1][1]*image2[i][j].rgbtRed+gxm[1][0]*image2[i][j-1].rgbtRed+gxm[2][1]*image2[i+1][j].rgbtRed
+                    +gxm[2][0]*image2[i+1][j-1].rgbtRed;
+    
+
+
+                gy1=gym[1][1]*image2[i][j].rgbtBlue+gym[1][0]*image2[i][j-1].rgbtBlue+gym[2][1]*image2[i+1][j].rgbtBlue
+                    +gym[2][0]*image2[i+1][j-1].rgbtBlue;
+
+                gy2=gym[1][1]*image2[i][j].rgbtGreen+gym[1][0]*image2[i][j-1].rgbtGreen+gym[2][1]*image2[i+1][j].rgbtGreen
+                    +gym[2][0]*image2[i+1][j-1].rgbtGreen;
+
+                gy3=gym[1][1]*image2[i][j].rgbtRed+gym[1][0]*image2[i][j-1].rgbtRed+gym[2][1]*image2[i+1][j].rgbtRed
+                    +gym[2][0]*image2[i+1][j-1].rgbtRed;
+               
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+            }
+
+            //bottom left corner
+            else if((i==height-1)&&(j==0))
+            {
+                gx1=gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][2]*image2[i][j+1].rgbtBlue+gxm[0][1]*image2[i-1][j].rgbtBlue
+                    +gxm[0][2]*image2[i-1][j+1].rgbtBlue;
+
+                gx2=gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][2]*image2[i][j+1].rgbtGreen+gxm[0][1]*image2[i-1][j].rgbtGreen
+                    +gxm[0][2]*image2[i-1][j+1].rgbtGreen;
+
+                gx3=gxm[1][1]*image2[i][j].rgbtRed+gxm[1][2]*image2[i][j+1].rgbtRed+gxm[0][1]*image2[i-1][j].rgbtRed
+                    +gxm[0][2]*image2[i-1][j+1].rgbtRed;
+    
+
+
+                gy1=gym[1][1]*image2[i][j].rgbtBlue+gym[1][2]*image2[i][j+1].rgbtBlue+gym[0][1]*image2[i-1][j].rgbtBlue
+                    +gym[0][2]*image2[i-1][j+1].rgbtBlue;
+
+                gy2=gym[1][1]*image2[i][j].rgbtGreen+gym[1][2]*image2[i][j+1].rgbtGreen+gym[0][1]*image2[i-1][j].rgbtGreen
+                    +gym[0][2]*image2[i-1][j+1].rgbtGreen;
+
+                gy3=gym[1][1]*image2[i][j].rgbtRed+gym[1][2]*image2[i][j+1].rgbtRed+gym[0][1]*image2[i-1][j].rgbtRed
+                    +gym[0][2]*image2[i-1][j+1].rgbtRed;
+               
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+            
+
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+            }
+        
+        //bottom right corners
+        else if((i==height-1)&&(j==width-1))
+            {
+                gx1=gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][0]*image2[i][j-1].rgbtBlue+gxm[0][1]*image2[i-1][j].rgbtBlue
+                    +gxm[0][0]*image2[i-1][j-1].rgbtBlue;
+
+                gx2=gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][0]*image2[i][j-1].rgbtGreen+gxm[0][1]*image2[i-1][j].rgbtGreen
+                    +gxm[0][0]*image2[i-1][j-1].rgbtGreen;
+
+                gx3=gxm[1][1]*image2[i][j].rgbtRed+gxm[1][0]*image2[i][j-1].rgbtRed+gxm[0][1]*image2[i-1][j].rgbtRed
+                    +gxm[0][0]*image2[i-1][j-1].rgbtRed;
+    
+
+
+                gy1=gym[1][1]*image2[i][j].rgbtBlue+gym[1][0]*image2[i][j-1].rgbtBlue+gym[0][1]*image2[i-1][j].rgbtBlue
+                    +gym[0][0]*image2[i-1][j-1].rgbtBlue;
+
+                gy2=gym[1][1]*image2[i][j].rgbtGreen+gym[1][0]*image2[i][j-1].rgbtGreen+gym[0][1]*image2[i-1][j].rgbtGreen
+                    +gym[0][0]*image2[i-1][j-1].rgbtGreen;
+
+                gy3=gym[1][1]*image2[i][j].rgbtRed+gym[1][0]*image2[i][j-1].rgbtRed+gym[0][1]*image2[i-1][j].rgbtRed
+                    +gym[0][0]*image2[i-1][j-1].rgbtRed;
+               
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+            
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+            }
+        
+            //bottom edges
+            else if(i==height-1)
+            {
+            gx1=gxm[0][0]*image2[i-1][j-1].rgbtBlue+gxm[0][1]*image2[i-1][j].rgbtBlue+gxm[0][2]*image2[i-1][j+1].rgbtBlue+gxm[1][0]*image2[i][j-1].rgbtBlue
+                +gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][2]*image2[i][j+1].rgbtBlue;
+
+            gx2=gxm[0][0]*image2[i-1][j-1].rgbtGreen+gxm[0][1]*image2[i-1][j].rgbtGreen+gxm[0][2]*image2[i-1][j+1].rgbtGreen+gxm[1][0]*image2[i][j-1].rgbtGreen
+                +gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][2]*image2[i][j+1].rgbtGreen;
+
+            gx3=gxm[0][0]*image2[i-1][j-1].rgbtRed+gxm[0][1]*image2[i-1][j].rgbtRed+gxm[0][2]*image2[i-1][j+1].rgbtRed+gxm[1][0]*image2[i][j-1].rgbtRed
+                +gxm[1][1]*image2[i][j].rgbtRed+gxm[1][2]*image2[i][j+1].rgbtRed;
+    
+
+            gy1=gym[0][0]*image2[i-1][j-1].rgbtBlue+gym[0][1]*image2[i-1][j].rgbtBlue+gym[0][2]*image2[i-1][j+1].rgbtBlue+gym[1][0]*image2[i][j-1].rgbtBlue
+                +gym[1][1]*image2[i][j].rgbtBlue+gym[1][2]*image2[i][j+1].rgbtBlue;
+
+            gy2=gym[0][0]*image2[i-1][j-1].rgbtGreen+gym[0][1]*image2[i-1][j].rgbtGreen+gym[0][2]*image2[i-1][j+1].rgbtGreen+gym[1][0]*image2[i][j-1].rgbtGreen
+                +gym[1][1]*image2[i][j].rgbtGreen+gym[1][2]*image2[i][j+1].rgbtGreen;
+
+            gy3=gym[0][0]*image2[i-1][j-1].rgbtRed+gym[0][1]*image2[i-1][j].rgbtRed+gym[0][2]*image2[i-1][j+1].rgbtRed+gym[1][0]*image2[i][j-1].rgbtRed
+                +gym[1][1]*image2[i][j].rgbtRed+gym[1][2]*image2[i][j+1].rgbtRed;
+              
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+            
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+            }
+
+            //top edges
+            else
+            {
+                gx1=gxm[1][0]*image2[i][j-1].rgbtBlue+gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][2]*image2[i][j+1].rgbtBlue+gxm[2][0]*image2[i+1][j-1].rgbtBlue+gxm[2][1]*image2[i+1][j].rgbtBlue
+                +gxm[2][2]*image2[i+1][j+1].rgbtBlue;
+
+            gx2=gxm[1][0]*image2[i][j-1].rgbtGreen+gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][2]*image2[i][j+1].rgbtGreen+gxm[2][0]*image2[i+1][j-1].rgbtGreen+gxm[2][1]*image2[i+1][j].rgbtGreen
+                +gxm[2][2]*image2[i+1][j+1].rgbtGreen;
+
+            gx3=gxm[1][0]*image2[i][j-1].rgbtRed+gxm[1][1]*image2[i][j].rgbtRed+gxm[1][2]*image2[i][j+1].rgbtRed+gxm[2][0]*image2[i+1][j-1].rgbtRed+gxm[2][1]*image2[i+1][j].rgbtRed
+                +gxm[2][2]*image2[i+1][j+1].rgbtRed;
+    
+
+            gy1=gym[1][0]*image2[i][j-1].rgbtBlue+gym[1][1]*image2[i][j].rgbtBlue+gym[1][2]*image2[i][j+1].rgbtBlue+gym[2][0]*image2[i+1][j-1].rgbtBlue+gym[2][1]*image2[i+1][j].rgbtBlue
+                +gym[2][2]*image2[i+1][j+1].rgbtBlue;
+
+            gy2=gym[1][0]*image2[i][j-1].rgbtGreen+gym[1][1]*image2[i][j].rgbtGreen+gym[1][2]*image2[i][j+1].rgbtGreen+gym[2][0]*image2[i+1][j-1].rgbtGreen+gym[2][1]*image2[i+1][j].rgbtGreen
+                +gym[2][2]*image2[i+1][j+1].rgbtGreen;
+
+            gy3=gym[1][0]*image2[i][j-1].rgbtRed+gym[1][1]*image2[i][j].rgbtRed+gym[1][2]*image2[i][j+1].rgbtRed+gym[2][0]*image2[i+1][j-1].rgbtRed+gym[2][1]*image2[i+1][j].rgbtRed
+                +gym[2][2]*image2[i+1][j+1].rgbtRed;
+              
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+            
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+            }
+            
+
+        }
+    }
+
+    //for left and right edges
+    for(int i=1; i<height-1; i++)
+    {
+        for(int j=0; j<width; j+=width-1)
+        {   
+            //for left edges
+            if(j==0)
+            {
+            gx1=gxm[0][1]*image2[i-1][j].rgbtBlue+gxm[0][2]*image2[i-1][j+1].rgbtBlue+gxm[1][1]*image2[i][j].rgbtBlue+gxm[1][2]*image2[i][j+1].rgbtBlue
+                +gxm[2][2]*image2[i+1][j+1].rgbtBlue;
+
+            gx2=gxm[0][1]*image2[i-1][j].rgbtGreen+gxm[0][2]*image2[i-1][j+1].rgbtGreen
+                +gxm[1][1]*image2[i][j].rgbtGreen+gxm[1][2]*image2[i][j+1].rgbtGreen+gxm[2][1]*image2[i+1][j].rgbtGreen
+                +gxm[2][2]*image2[i+1][j+1].rgbtGreen;
+
+            gx3=gxm[0][1]*image2[i-1][j].rgbtRed+gxm[0][2]*image2[i-1][j+1].rgbtRed
+                +gxm[1][1]*image2[i][j].rgbtRed+gxm[1][2]*image2[i][j+1].rgbtRed+gxm[2][1]*image2[i+1][j].rgbtRed
+                +gxm[2][2]*image2[i+1][j+1].rgbtRed;
+    
+
+            gy1=gym[0][1]*image2[i-1][j].rgbtBlue+gym[0][2]*image2[i-1][j+1].rgbtBlue
+                +gym[1][1]*image2[i][j].rgbtBlue+gym[1][2]*image2[i][j+1].rgbtBlue+gym[2][1]*image2[i+1][j].rgbtBlue
+                +gym[2][2]*image2[i+1][j+1].rgbtBlue;
+
+            gy2=gym[0][1]*image2[i-1][j].rgbtGreen+gym[0][2]*image2[i-1][j+1].rgbtGreen+
+                gym[1][1]*image2[i][j].rgbtGreen+gym[1][2]*image2[i][j+1].rgbtGreen+gym[2][1]*image2[i+1][j].rgbtGreen
+                +gym[2][2]*image2[i+1][j+1].rgbtGreen;
+
+            gy3=gym[0][1]*image2[i-1][j].rgbtRed+gym[0][2]*image2[i-1][j+1].rgbtRed
+                +gym[1][1]*image2[i][j].rgbtRed+gym[1][2]*image2[i][j+1].rgbtRed+gym[2][1]*image2[i+1][j].rgbtRed
+                +gym[2][2]*image2[i+1][j+1].rgbtRed;
+              
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+            
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+            }
+
+            else
+            {
+            
+            gx1=gxm[0][0]*image2[i-1][j-1].rgbtBlue+gxm[0][1]*image2[i-1][j].rgbtBlue+gxm[1][0]*image2[i][j-1].rgbtBlue
+                +gxm[1][1]*image2[i][j].rgbtBlue+gxm[2][0]*image2[i+1][j-1].rgbtBlue+gxm[2][1]*image2[i+1][j].rgbtBlue;
+
+            gx2=gxm[0][0]*image2[i-1][j-1].rgbtGreen+gxm[0][1]*image2[i-1][j].rgbtGreen+gxm[1][0]*image2[i][j-1].rgbtGreen
+                +gxm[1][1]*image2[i][j].rgbtGreen+gxm[2][0]*image2[i+1][j-1].rgbtGreen+gxm[2][1]*image2[i+1][j].rgbtGreen;
+
+            gx3=gxm[0][0]*image2[i-1][j-1].rgbtRed+gxm[0][1]*image2[i-1][j].rgbtRed+gxm[1][0]*image2[i][j-1].rgbtRed
+                +gxm[1][1]*image2[i][j].rgbtRed+gxm[2][0]*image2[i+1][j-1].rgbtRed+gxm[2][1]*image2[i+1][j].rgbtRed;
+    
+
+            gy1=gym[0][0]*image2[i-1][j-1].rgbtBlue+gym[0][1]*image2[i-1][j].rgbtBlue+gym[1][0]*image2[i][j-1].rgbtBlue
+                +gym[1][1]*image2[i][j].rgbtBlue+gym[2][0]*image2[i+1][j-1].rgbtBlue+gym[2][1]*image2[i+1][j].rgbtBlue;
+
+            gy2=gym[0][0]*image2[i-1][j-1].rgbtGreen+gym[0][1]*image2[i-1][j].rgbtGreen+gym[1][0]*image2[i][j-1].rgbtGreen
+                +gym[1][1]*image2[i][j].rgbtGreen+gym[2][0]*image2[i+1][j-1].rgbtGreen+gym[2][1]*image2[i+1][j].rgbtGreen;
+
+            gy3=gym[0][0]*image2[i-1][j-1].rgbtRed+gym[0][1]*image2[i-1][j].rgbtRed+gym[1][0]*image2[i][j-1].rgbtRed
+                +gym[1][1]*image2[i][j].rgbtRed+gym[2][0]*image2[i+1][j-1].rgbtRed+gym[2][1]*image2[i+1][j].rgbtRed;
+              
+            g1=round(sqrt(gx1*gx1 + gy1*gy1));
+            g2=round(sqrt(gx2*gx2 + gy2*gy2));
+            g3=round(sqrt(gx3*gx3 + gy3*gy3));
+            
+            if(g1>255)
+            {
+                g1=255;
+            }
+
+            if(g2>255)
+            {
+                g2=255;
+            }
+            
+            if(g3>255)
+            {
+                g3=255;
+            }
+
+            image[i][j].rgbtBlue=g1;
+            image[i][j].rgbtGreen=g2;
+            image[i][j].rgbtRed=g3;    
+
+            }
+            
+            
+        }
+    }
     return;
 }
 
-//top rigth corner
-//bottom left corner
-//bottom right corner
+
+
+
+//bottom right corner Green
