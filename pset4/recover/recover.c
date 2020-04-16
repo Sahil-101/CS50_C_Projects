@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include<string.h>
 
+//still some bugs are there
 
 int main(int argc, char *argv[])
 {
