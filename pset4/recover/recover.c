@@ -32,35 +32,37 @@ int main(int argc, char *argv[])
     check=fread(array,1,512,f);
 
     //i for index usage and flag for else conditions
-    int i=0,flag=0;
+    int flag=0;
 
     //image name buffer
-    char filename[6];
+    char filename[7];
 
     while (check==512)
     {       
             //checking of jpeg format conditions
-            if (array[i]==0xff)
+            if((array[0]==0xff)&&(array[1]==0xd8)&&(array[2]==0xff)&&((array[3] & 0xf0)==0xe0))
             {
-                if(array[i+1]==0xd8)
-                {
-                    if(array[i+2]==0xff)
-                    {
-                        if((array[i+3] & 0xf0)==0xe0)
-                        {                            
+                                           
                             //printing name in image name buffer
                             sprintf(filename,"%03i.jpg", imgcount);
 
-                            //image file pointer along with name
-                            img=fopen(filename,"w");
-                
-                            //writing new file
+                            //image file pointer along with name if already one was opened close the previous one
+                            if(flag==1)
+                            {
+                                fclose(img);
+                                img=fopen(filename,"w");
+                            }
+                            else
+                            {
+                                img=fopen(filename,"w");
+                            }
+                             //writing new file
                             fwrite(array,1,512,img);
                             flag=1;
                             imgcount++;  
-                        }    
-                    }
-                }
+                       
+                    
+            
             }
             
             //if no new jpeg header continue to write
