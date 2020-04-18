@@ -30,7 +30,7 @@ void clean(unsigned int n, node *array[n])
     }
 }
  
-void clean(N,table);
+
 
 // Returns true if word is in dictionary else false
 bool check(const char *word)
@@ -76,6 +76,9 @@ bool load(const char *dictionary)
 {   
     //TO DO
 
+    //cleaning up garbage values
+    clean(N,table);
+
     //opening file
     FILE *f=fopen(dictionary,"r");
     if(f==NULL)
@@ -84,7 +87,7 @@ bool load(const char *dictionary)
     }
 
     //assigning temp string variable adn index variable and node* pointers
-    char* word_;
+    char* word_=NULL;
     int index_;
     node *n=NULL, *n1=NULL;
     //reading word from dictionary to temp string variable
