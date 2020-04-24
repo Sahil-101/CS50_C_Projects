@@ -1,6 +1,7 @@
 // Implements a dictionary's functionality
 #include<stdio.h>
 #include <stdbool.h>
+#include<strings.h>
 #include<string.h>
 #include<math.h>
 #include<stdlib.h>
@@ -26,7 +27,7 @@ void clean(unsigned int n, node *array[n])
 {
     for(int i=0; i<N; i++)
     {
-        table[i]->next=NULL;
+        table[i]=NULL;
     }
 }
  
@@ -36,6 +37,24 @@ void clean(unsigned int n, node *array[n])
 bool check(const char *word)
 {
     // TODO
+    node* temp=NULL;
+
+    int index_ =hash(word);
+
+    temp=table[index_];
+
+    while(temp!=NULL)
+    {
+        if(strcasecmp(temp->word ,word))
+        {
+            return true;
+        }
+        else
+        {
+            temp=temp->next;
+        }
+    }
+
     return false;
 }
 
@@ -108,14 +127,15 @@ bool load(const char *dictionary)
         //getting index from hash function
         index_ =hash(word_);
 
-        //if nothing present at table[index_]->next there then direct add else extend the list
+        n1=table[index_];
+        //if nothing present at table[index_] there then direct add else extend the list
         if(n1==NULL)
         {
                 table[index_]=n;
         }
         else
         {
-            n->next=table[index_];
+            n->next=table[index_]->next;
             table[index_]=n;           
         }
 
@@ -127,7 +147,22 @@ bool load(const char *dictionary)
 unsigned int size(void)
 {
     // TODO
-    return 0;
+    
+    node *temp;
+    int count=0; 
+
+    for(int i=0; i<N; i++)
+    {
+        temp=table[i]->next;
+
+        while (temp!=NULL)
+        {
+            temp=temp->next;
+            count++;
+        }
+    }
+
+    return count;
 }
 
 // Unloads dictionary from memory, returning true if successful else false

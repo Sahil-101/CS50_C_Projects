@@ -25,6 +25,7 @@ first2=credit3;
 
 while(credit!=0)
 {
+    printf("sum2 is %ld, sum3 id %ld temp is %ld \n",sum2,sum3,credit%10);
     if(i%2==0)
     {
         sum3+=(credit%10);
@@ -46,7 +47,7 @@ while(credit2>10)
     index=credit2/10;
     credit2=credit2/10;
 }
-//printf("index=%ld,sum3+sum2=%ld\n", index,sum3+sum2);
+printf("sum3=%ld,sum2=%ld\n",sum3,sum2);
 //printf("first2 is %ld", first2);
 if((sum2+sum3)%10==0)
 {
