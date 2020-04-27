@@ -135,8 +135,14 @@ bool load(const char *dictionary)
         }
         else
         {
-            n->next=table[index_]->next;
-            table[index_]=n;           
+            //n->next=table[index_]->next;
+            //table[index_]=n;
+            while(n1!=NULL)
+            {
+                n1=n1->next;
+            }
+            n1->next=&n;
+
         }
 
     }
