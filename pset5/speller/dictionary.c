@@ -141,7 +141,7 @@ bool load(const char *dictionary)
             {
                 n1=n1->next;
             }
-            n1->next=&n;
+            n1->next=n;
 
         }
 
@@ -175,5 +175,25 @@ unsigned int size(void)
 bool unload(void)
 {
     // TODO
+    node *temp0=NULL;
+    for(int i=0; i<N; i++)
+    {
+        temp0=table[i];
+        while(temp0!=NULL)
+        {
+            if(temp0!=NULL)
+            {   
+                temp0=temp0->next;
+            }
+            else
+            {
+                free(temp0);
+                temp0=table[i]; 
+            }
+
+        }
+        
+        
+    }
     return false;
 }
